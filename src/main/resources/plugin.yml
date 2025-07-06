@@ -1,0 +1,4 @@
+name: StaffUtils
+version: '1.0-SNAPSHOT'
+main: git.snowk.staff.StaffManager
+api-version: '1.18'

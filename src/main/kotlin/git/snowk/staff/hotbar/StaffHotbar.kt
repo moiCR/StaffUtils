@@ -25,7 +25,9 @@ enum class StaffHotbar (val item : ItemStack, val slot : Int) {
         8);
 
 
-    fun give(player : Player){
-        entries.forEach { entry -> player.inventory.setItem(entry.slot, entry.item)}
+    companion object{
+        fun give(player : Player){
+            entries.forEach { entry -> player.inventory.setItem(entry.slot, entry.item)}
+        }
     }
 }

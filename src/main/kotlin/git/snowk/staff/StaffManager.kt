@@ -1,21 +1,24 @@
 package git.snowk.staff
 
+import git.snowk.staff.hotbar.StaffHotbar
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.UUID
 
 
 class StaffManager (val plugin: JavaPlugin) {
 
-    var staffs : MutableList<UUID> = mutableListOf()
-    var vanished : MutableList<UUID> = mutableListOf()
+    val staffs : MutableList<UUID> = mutableListOf()
+    val vanished : MutableList<UUID> = mutableListOf()
+    val inventories : MutableMap<UUID, MutableList<ItemStack>> = mutableMapOf()
 
 
     fun toggleStaffMode(player : Player){
-        if (staffs.contains(player.uniqueId)){
-            // disableStaffMode(player)
-            // disableVanish(player)
+        if (isInStaffMode(player)){
+            disableStaffMode(player, true)
             return;
         }
 
@@ -24,11 +27,27 @@ class StaffManager (val plugin: JavaPlugin) {
 
     fun enableStaffMode(staff: Player){
         staffs.add(staff.uniqueId)
+        enableVanish(staff)
+
+        val items = mutableListOf<ItemStack>()
+        for (i in 0..35){
+            items.add(staff.inventory.getItem(i) ?: continue)
+        }
+
+        inventories[staff.uniqueId] = items
+        staff.inventory.clear()
+        StaffHotbar.give(staff)
+        staff.gameMode = GameMode.CREATIVE
     }
 
     fun disableStaffMode(staff: Player, removeVanish : Boolean){
         staffs.remove(staff.uniqueId)
-        if (removeVanish) return //disableVanish(player)
+        if (removeVanish) disableVanish(staff)
+
+        val items = inventories[staff.uniqueId] ?: return
+        for (i in 0..35){
+            staff.inventory.setItem(i, items[i])
+        }
     }
 
     fun enableVanish(staff: Player){
@@ -37,6 +56,14 @@ class StaffManager (val plugin: JavaPlugin) {
 
         for (noStaff in Bukkit.getOnlinePlayers()){
             noStaff.hidePlayer(staff)
+        }
+    }
+
+    fun disableVanish(staff: Player){
+        if (!isVanished(staff)) return
+        vanished.remove(staff.uniqueId)
+        for (noStaff in Bukkit.getOnlinePlayers()){
+            noStaff.showPlayer(staff)
         }
     }
 
@@ -49,26 +76,21 @@ class StaffManager (val plugin: JavaPlugin) {
     }
 
 
-    fun hideVanishedStaffs(){
+    fun hideVanishedStaffs(player : Player, forceVanish : Boolean){
         val vanishedStaffs = vanished
-        val onlinePlayers = Bukkit.getOnlinePlayers()
-
-        for (noStaff in onlinePlayers){
-            for (vanishedStaff in vanishedStaffs){
-                noStaff.hidePlayer(Bukkit.getPlayer(vanishedStaff) ?: continue)
-            }
+        if (!forceVanish && player.hasPermission("staff.mode")
+            || player.hasPermission("staff.vanish")){
+            return;
         }
+
+        for (vanishedStaff in vanishedStaffs){
+            player.hidePlayer(Bukkit.getPlayer(vanishedStaff) ?: continue)
+        }
+
     }
 
     fun showVanishedStaffs(){
-        val vanishedStaffs = vanished
-        val onlinePlayers = Bukkit.getOnlinePlayers()
 
-        for (noStaff in onlinePlayers){
-            for (vanishedStaff in vanishedStaffs){
-                noStaff.showPlayer(Bukkit.getPlayer(vanishedStaff) ?: continue)
-            }
-        }
     }
 
     fun getOnlineStaffs() : List<Player>{
