@@ -60,7 +60,7 @@ class StaffListener (val manager : StaffManager) : Listener {
         val player = event.player
         val staff = manager.staffs.find { it.uniqueId == player.uniqueId } ?: return
 
-        if (staff.vanished && !player.hasPermission("staff.mode.place")){
+        if (!staff.vanished && !player.hasPermission("staff.mode.place")){
             event.isCancelled = true
         }
     }
@@ -70,7 +70,7 @@ class StaffListener (val manager : StaffManager) : Listener {
         val player = event.player
         val staff = manager.staffs.find { it.uniqueId == player.uniqueId } ?: return
 
-        if (staff.vanished && !player.hasPermission("staff.mode.break")){
+        if (!staff.vanished && !player.hasPermission("staff.mode.break")){
             event.isCancelled = true
         }
     }
@@ -82,7 +82,7 @@ class StaffListener (val manager : StaffManager) : Listener {
         frozenPlayer.handleMove(event)
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun onChat(event : AsyncPlayerChatEvent){
         val player = event.player
         val frozenPlayer = findFrozenPlayer(player) ?: return
