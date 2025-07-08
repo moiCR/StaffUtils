@@ -8,16 +8,16 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class StaffManager (val plugin: JavaPlugin) {
 
-    val staffs : MutableList<StaffMode> = mutableListOf()
+    val staffs : MutableList<Staff> = mutableListOf()
 
     init{
         StaffListener(this)
     }
 
-    fun addStaff(player : Player) : StaffMode{
-        val staffMode = StaffMode(this, player.uniqueId)
-        staffs.add(staffMode)
-        return staffMode
+    fun addStaff(player : Player) : Staff{
+        val staff = Staff(this, player.uniqueId)
+        staffs.add(staff)
+        return staff
     }
 
     fun removeStaff(player : Player){
@@ -27,7 +27,6 @@ class StaffManager (val plugin: JavaPlugin) {
     fun isInStaffMode(player: Player) : Boolean{
         return staffs.any { staffMode -> staffMode.uniqueId == player.uniqueId }
     }
-
 
     fun getOnlineStaffs() : List<Player>{
         return Bukkit.getOnlinePlayers()
