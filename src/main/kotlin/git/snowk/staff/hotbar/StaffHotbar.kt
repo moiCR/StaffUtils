@@ -7,13 +7,17 @@ import org.bukkit.inventory.ItemStack
 
 enum class StaffHotbar (val item : ItemStack, val slot : Int) {
 
-    COMPASS(
-        ItemBuilder(Material.getMaterial("WATCH")!!).build(),
+    NAVIGATOR(
+        ItemBuilder(Material.getMaterial("WATCH")!!)
+            .setDisplayName("&aNavigator")
+            .build(),
         0
     ),
 
     ONLINE_STAFFS(
         ItemBuilder(Material.getMaterial("SKULL_ITEM")!!)
+            .setDisplayName("&aOnline Staffs")
+            .setSkullOwner("MHF_ArrowUp")
             .setData(3)
             .build(),
         4
@@ -21,6 +25,7 @@ enum class StaffHotbar (val item : ItemStack, val slot : Int) {
 
     FREEZE(
         ItemBuilder(Material.getMaterial("ICE")!!)
+            .setDisplayName("&aFreeze Player")
             .build(),
         8);
 
